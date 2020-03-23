@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.github.chrism-qmul</groupId>
+  <artifactId>clj-druid</artifactId>
+  <versioning>
+    <release>0.2.18-finalizingfield-fix</release>
+    <versions>
+      <version>0.2.18-finalizingfield-fix</version>
+    </versions>
+    <lastUpdated>20200112133637</lastUpdated>
+  </versioning>
+</metadata>

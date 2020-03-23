@@ -1,0 +1,166 @@
+version: "2.2"
+
+volumes:
+  metadata_data: {}
+  middle_var: {}
+  historical_var: {}
+  broker_var: {}
+  coordinator_var: {}
+  router_var: {}
+  storage: {}
+
+services:
+  postgres:
+    container_name: postgres
+    image: "postgres:11.2-alpine"
+    restart: unless-stopped
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=FoolishPassword
+      - POSTGRES_USER=druid
+      - POSTGRES_DB=druid
+
+  # Need 3.5 or later for container nodes
+  zookeeper:
+    container_name: zookeeper
+    image: zookeeper:3.5
+    restart: unless-stopped
+    environment:
+      - ZOO_MY_ID=1
+
+  coordinator:
+    image: apache/druid:0.17.0
+    container_name: coordinator
+    restart: unless-stopped
+    volumes:
+      - ./storage:/opt/data
+      - coordinator_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - kafka
+      - postgres
+        #    ports:
+        #- "8081:8081"
+    command:
+      - coordinator
+    env_file:
+      - druidenvironment
+
+  broker:
+    image: apache/druid:0.17.0
+    container_name: broker
+    restart: unless-stopped
+    volumes:
+      - broker_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - postgres
+      - kafka
+      - coordinator
+        #ports:
+        #- "8082:8082"
+    command:
+      - broker
+    env_file:
+      - druidenvironment
+
+  historical:
+    image: apache/druid:0.17.0
+    container_name: historical
+    restart: unless-stopped
+    volumes:
+      - ./storage:/opt/data
+      - historical_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - postgres
+      - kafka
+      - coordinator
+        #ports:
+        #- "8083:8083"
+    command:
+      - historical
+    env_file:
+      - druidenvironment
+
+  middlemanager:
+    image: apache/druid:0.17.0
+    container_name: middlemanager
+    restart: unless-stopped
+    volumes:
+      - ./storage:/opt/data
+      - middle_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - postgres
+      - coordinator
+      - kafka
+        #ports:
+        #- "8091:8091"
+    command:
+      - middleManager
+    env_file:
+      - druidenvironment
+
+  router:
+    image: apache/druid:0.17.0
+    container_name: router
+    restart: unless-stopped
+    volumes:
+      - router_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - postgres
+      - coordinator
+      - kafka
+    ports:
+      - "8888:8888"
+    command:
+      - router
+    env_file:
+      - druidenvironment
+
+  kafka:
+    image: wurstmeister/kafka:2.12-2.4.0
+    container_name: kafka
+    restart: unless-stopped
+    hostname: kafka
+    #ports:
+    #- "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_CREATE_TOPICS="game-events-input:1:1,finished-games:1:1,game-updates:1:1"
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_HEAP_OPTS=-Xmx256M -Xms128M
+      - KAFKA_PORT=9092
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+
+  eventprocessor:
+    build: eventprocessor
+    container_name: eventprocessor
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+
+  dashboard:
+    build: dashboard
+    container_name: dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DRUID_BROKER=broker:8082
+      - DRUID_ROUTER=router:8888
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - ZOOKEEPER_SERVERS=zookeeper:2181
+    depends_on:
+      - kafka
+      - zookeeper
+      - broker
+      - router

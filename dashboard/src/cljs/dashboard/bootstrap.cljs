@@ -1,0 +1,31 @@
+(ns dashboard.bootstrap
+    (:require 
+      [reagent.core :as reagent]
+      [cljsjs.react-bootstrap]))
+
+(def button (reagent/adapt-react-class (aget js/ReactBootstrap "Button")))
+(def button-group (reagent/adapt-react-class (aget js/ReactBootstrap "ButtonGroup")))
+(def grid (reagent/adapt-react-class (aget js/ReactBootstrap "Grid")))
+(def row (reagent/adapt-react-class (aget js/ReactBootstrap "Row")))
+(def col (reagent/adapt-react-class (aget js/ReactBootstrap "Col")))
+(def list-group (reagent/adapt-react-class (aget js/ReactBootstrap "ListGroup")))
+(def list-group-item (reagent/adapt-react-class (aget js/ReactBootstrap "ListGroupItem")))
+(def badge (reagent/adapt-react-class (aget js/ReactBootstrap "Badge")))
+(def progress-bar (reagent/adapt-react-class (aget js/ReactBootstrap "ProgressBar")))
+(def navbar (reagent/adapt-react-class (aget js/ReactBootstrap "Navbar")))
+(def nav (reagent/adapt-react-class (aget js/ReactBootstrap "Nav")))
+(def navitem (reagent/adapt-react-class (aget js/ReactBootstrap "NavItem")))
+(def navbar-header (reagent/adapt-react-class (aget js/ReactBootstrap.Navbar "Header")))
+(def navbar-text (reagent/adapt-react-class (aget js/ReactBootstrap.Navbar "Text")))
+(def navbar-brand (reagent/adapt-react-class (aget js/ReactBootstrap "NavbarBrand")))
+(def navbar-collapse (reagent/adapt-react-class (aget js/ReactBootstrap.Navbar "Collapse")))
+(def carousel (reagent/adapt-react-class (aget js/ReactBootstrap "Carousel")))
+(def carousel-item (reagent/adapt-react-class (aget js/ReactBootstrap "CarouselItem")))
+(def modal (reagent/adapt-react-class (aget js/ReactBootstrap "Modal")))
+(def modal-body (reagent/adapt-react-class (aget js/ReactBootstrap "ModalBody")))
+(def modal-header (reagent/adapt-react-class (aget js/ReactBootstrap "ModalHeader")))
+(def modal-title (reagent/adapt-react-class (aget js/ReactBootstrap "ModalTitle")))
+(def modal-footer (reagent/adapt-react-class (aget js/ReactBootstrap "ModalFooter")))
+
+;;(def navbar-header (reagent/adapt-react-class (aget js/ReactBootstrap "Navbar.Header")))
+;;(def navitem (reagent/adapt-react-class (aget js/ReactBootstrap "NavItem")))

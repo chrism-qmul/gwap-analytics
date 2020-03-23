@@ -1,0 +1,62 @@
+{
+  "type": "kafka",
+  "ioConfig": {
+    "type": "kafka",
+    "consumerProperties": {
+      "bootstrap.servers": "kafka:9092"
+    },
+    "topic": "finished-games"
+  },
+  "tuningConfig": {
+    "type": "kafka"
+  },
+  "dataSchema": {
+    "dataSource": "finished-games",
+    "granularitySpec": {
+      "type": "uniform",
+      "segmentGranularity": "MONTH",
+      "queryGranularity": "HOUR",
+      "rollup": true
+    },
+    "parser": {
+      "type": "string",
+      "parseSpec": {
+        "format": "json",
+        "timestampSpec": {
+          "column": "timestamp",
+          "format": "millis"
+        },
+        "dimensionsSpec": {
+          "dimensions": [
+            "campaign",
+            "experiment",
+            "game",
+            "player",
+            "session_id"
+          ]
+        }
+      }
+    },
+    "metricsSpec": [
+      {
+        "name": "count",
+        "type": "count"
+      },
+      {
+        "name": "duration",
+        "type": "longSum",
+        "fieldName": "duration"
+      },
+      {
+        "name": "judgements",
+        "type": "longSum",
+        "fieldName": "judgements"
+      },
+      {
+        "name": "player_sketch",
+        "type": "thetaSketch",
+        "fieldName": "player"
+      }
+    ]
+  }
+}
